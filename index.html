@@ -148,6 +148,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 24px;
       margin-bottom: 24px;
+      align-items: start;
     }
 
     @media (max-width: 768px) {
@@ -417,16 +418,6 @@
 
   <div class="main-grid">
 
-    <!-- Credentials Card -->
-    <div class="card">
-      <div class="card-title">Credentials</div>
-
-      <div class="field">
-        <label>User ID (ID Fraud Shield)</label>
-        <input id="userId" placeholder="Enter unique user ID">
-      </div>
-    </div>
-
     <!-- Configuration Card -->
     <div class="card">
       <div class="card-title">Configuration</div>
@@ -556,13 +547,10 @@
   }
 
   async function startSDK() {
-    const userId = document.getElementById("userId").value;
     const sdkVersion = document.getElementById("sdkVersion").value;
     const locale = document.getElementById("locale").value;
     const environment = document.getElementById("environment").value;
     const cameraShape = document.getElementById("cameraShape").value;
-
-    if (!userId) { alert("Please input User ID"); return; }
 
     setStatus("Starting...");
     setResult("// Fetching credentials...");
@@ -592,7 +580,6 @@
         locale,
         // elementId omitted intentionally: per VIDA Web SDK docs, when not provided
         // the SDK creates and manages its own modal dialog that overlays the page.
-        userInfo: { id: userId },
         workflowConfigs: {
           liveness: {
             maxRetryAttempts: 4,
