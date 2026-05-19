@@ -420,9 +420,6 @@
     <!-- Credentials Card -->
     <div class="card">
       <div class="card-title">Credentials</div>
-      <div style="font-size: 13px; color: var(--gray-light); margin-bottom: 14px; padding: 10px 12px; background: var(--green-glow); border: 1px solid var(--green-border); border-radius: 6px;">
-        Bearer Token &amp; Signing Key are fetched securely from Netlify Function <code style="background: rgba(0,0,0,0.25); padding: 1px 5px; border-radius: 3px;">/.netlify/functions/vida-token</code>. No need to paste them.
-      </div>
 
       <div class="field">
         <label>User ID (ID Fraud Shield)</label>
@@ -593,7 +590,8 @@
         signingKey,
         workflow: "liveness",
         locale,
-        elementId: "sdk-container",
+        // elementId omitted intentionally: per VIDA Web SDK docs, when not provided
+        // the SDK creates and manages its own modal dialog that overlays the page.
         userInfo: { id: userId },
         workflowConfigs: {
           liveness: {
