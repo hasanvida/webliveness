@@ -1,0 +1,13 @@
+# netlify.toml — Netlify configuration
+
+[build]
+  # Serve the static site from project root
+  publish = "."
+  # Tell Netlify where to find serverless functions
+  functions = "netlify/functions"
+
+# Optional: redirect /api/* to functions for cleaner URLs
+[[redirects]]
+  from = "/api/vida-token"
+  to = "/.netlify/functions/vida-token"
+  status = 200
