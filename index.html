@@ -200,6 +200,23 @@
       margin-bottom: 0;
     }
 
+    /* Field grid — 2x2 layout for fields inside a full-width card */
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 24px;
+    }
+
+    .field-grid .field {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     label {
       display: block;
       font-size: 12px;
@@ -418,39 +435,41 @@
 
   <div class="main-grid">
 
-    <!-- Configuration Card -->
-    <div class="card">
+    <!-- Configuration Card (full width) -->
+    <div class="card card-full">
       <div class="card-title">Configuration</div>
 
-      <div class="field">
-        <label>SDK Version</label>
-        <input id="sdkVersion" type="text" value="1.1.1" placeholder="e.g. 1.1.1">
-      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label>SDK Version</label>
+          <input id="sdkVersion" type="text" value="1.1.1" placeholder="e.g. 1.1.1">
+        </div>
 
-      <div class="field">
-        <label>Environment</label>
-        <select id="environment">
-          <option value="sandbox">Sandbox</option>
-          <option value="production">Production</option>
-        </select>
-      </div>
+        <div class="field">
+          <label>Environment</label>
+          <select id="environment">
+            <option value="sandbox">Sandbox</option>
+            <option value="production">Production</option>
+          </select>
+        </div>
 
-      <div class="field">
-        <label>Locale</label>
-        <select id="locale">
-          <option value="EN">English</option>
-          <option value="ID">Bahasa Indonesia</option>
-        </select>
-      </div>
+        <div class="field">
+          <label>Locale</label>
+          <select id="locale">
+            <option value="EN">English</option>
+            <option value="ID">Bahasa Indonesia</option>
+          </select>
+        </div>
 
-      <div class="field">
-        <label>Camera Frame Shape</label>
-        <select id="cameraShape">
-          <option value="oval">Oval</option>
-          <option value="circle">Circle</option>
-          <option value="square">Square</option>
-          <option value="rectangle">Rectangle</option>
-        </select>
+        <div class="field">
+          <label>Camera Frame Shape</label>
+          <select id="cameraShape">
+            <option value="oval">Oval</option>
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="rectangle">Rectangle</option>
+          </select>
+        </div>
       </div>
     </div>
 
