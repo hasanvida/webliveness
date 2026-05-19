@@ -293,36 +293,6 @@
       margin-top: 16px;
     }
 
-    /* When the SDK is active, dim the page behind it and force any
-       SDK-injected fixed dialog to center. We tag the dialog with a class
-       via JS so we can target it precisely. */
-    body.sdk-active::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: rgba(11, 22, 40, 0.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 9998;
-      pointer-events: none;
-    }
-    .vida-sdk-centered {
-      position: fixed !important;
-      top: 50% !important;
-      left: 50% !important;
-      right: auto !important;
-      bottom: auto !important;
-      transform: translate(-50%, -50%) !important;
-      max-width: 480px !important;
-      width: calc(100% - 40px) !important;
-      max-height: 90vh !important;
-      overflow-y: auto !important;
-      z-index: 9999 !important;
-      border-radius: 16px !important;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
-      margin: 0 !important;
-    }
-
     /* Result area */
     .result-card {
       background: #070f1c;
@@ -618,11 +588,6 @@
 
       setResult("// Initializing SDK...");
 
-      // Snapshot elements that exist BEFORE SDK init, so we can find what the SDK adds
-      const elementsBefore = new Set(document.body.querySelectorAll("*"));
-
-      document.body.classList.add("sdk-active");
-
       await window.VidaSDK.init({
         token,
         signingKey,
@@ -644,7 +609,6 @@
           setStatus("Selfie captured. Processing...");
         },
         onComplete: (data) => {
-          cleanupSDK();
           const formattedData = {
             ...data,
             base64Image: data.base64Image ? "[base64 image data]" : undefined
@@ -653,7 +617,6 @@
           setStatus("SDK completed successfully.");
         },
         onError: (error) => {
-          cleanupSDK();
           const formattedError = {
             ...error,
             base64Image: error.base64Image ? "[base64 image data]" : undefined
@@ -663,44 +626,13 @@
         }
       });
 
-      // After init, find SDK-injected top-level element(s) and force-center them
-      setTimeout(() => {
-        const allNow = document.body.querySelectorAll("*");
-        for (const el of allNow) {
-          if (elementsBefore.has(el)) continue;
-          // Only target direct top-level injected nodes (not their children)
-          if (!elementsBefore.has(el.parentElement) && el.parentElement !== document.body && el.parentElement.id !== "sdk-container") continue;
-          // Heuristic: SDK overlay is a fixed-position element OR a direct body child
-          const cs = window.getComputedStyle(el);
-          if (cs.position === "fixed" || el.parentElement === document.body) {
-            el.classList.add("vida-sdk-centered");
-          }
-        }
-        // Also: if the SDK rendered inside #sdk-container, lift it out and center it
-        const container = document.getElementById("sdk-container");
-        if (container && container.children.length > 0) {
-          for (const child of Array.from(container.children)) {
-            child.classList.add("vida-sdk-centered");
-            document.body.appendChild(child);
-          }
-        }
-      }, 100);
-
       setStatus("SDK running — follow the on-screen instructions.");
 
     } catch (err) {
-      cleanupSDK();
       console.error(err);
       setResult("// Error: " + (err.message || JSON.stringify(err)), true);
       setStatus("SDK initialization failed.");
     }
-  }
-
-  function cleanupSDK() {
-    document.body.classList.remove("sdk-active");
-    document.querySelectorAll(".vida-sdk-centered").forEach(el => {
-      el.classList.remove("vida-sdk-centered");
-    });
   }
 </script>
 
