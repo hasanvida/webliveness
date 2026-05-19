@@ -293,42 +293,6 @@
       margin-top: 16px;
     }
 
-    /* Force-center any VIDA SDK dialog that gets injected anywhere in the page.
-       The SDK renders its own positioned element (defaults to bottom-right).
-       This catches common selectors and forces it into a centered modal. */
-    body.sdk-active::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: rgba(11, 22, 40, 0.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 9998;
-    }
-
-    /* Target the SDK's own dialog. We use multiple selectors because we don't
-       know the SDK's exact DOM, but common patterns: any fixed-position element
-       inside body that appeared after SDK init, or elements with vida- prefix. */
-    body.sdk-active [class*="vida-"],
-    body.sdk-active [id*="vida-"],
-    body.sdk-active [class*="VidaSDK"],
-    body.sdk-active [class*="liveness"],
-    #sdk-container > * {
-      position: fixed !important;
-      top: 50% !important;
-      left: 50% !important;
-      right: auto !important;
-      bottom: auto !important;
-      transform: translate(-50%, -50%) !important;
-      max-width: 480px !important;
-      width: calc(100% - 40px) !important;
-      max-height: 90vh !important;
-      overflow-y: auto !important;
-      z-index: 9999 !important;
-      border-radius: 16px !important;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
-    }
-
     /* Result area */
     .result-card {
       background: #070f1c;
@@ -624,9 +588,6 @@
 
       setResult("// Initializing SDK...");
 
-      // Add body class so our CSS overrides apply (forces SDK dialog to center)
-      document.body.classList.add("sdk-active");
-
       await window.VidaSDK.init({
         token,
         signingKey,
@@ -648,7 +609,6 @@
           setStatus("Selfie captured. Processing...");
         },
         onComplete: (data) => {
-          document.body.classList.remove("sdk-active");
           const formattedData = {
             ...data,
             base64Image: data.base64Image ? "[base64 image data]" : undefined
@@ -657,7 +617,6 @@
           setStatus("SDK completed successfully.");
         },
         onError: (error) => {
-          document.body.classList.remove("sdk-active");
           const formattedError = {
             ...error,
             base64Image: error.base64Image ? "[base64 image data]" : undefined
@@ -670,7 +629,6 @@
       setStatus("SDK running — follow the on-screen instructions.");
 
     } catch (err) {
-      document.body.classList.remove("sdk-active");
       console.error(err);
       setResult("// Error: " + (err.message || JSON.stringify(err)), true);
       setStatus("SDK initialization failed.");
