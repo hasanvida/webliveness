@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VIDA Web SDK Tester</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #0B1628;
+      --navy-light: #112240;
+      --navy-mid: #1a2f4a;
+      --green: #1FD760;
+      --green-dim: #17a847;
+      --green-glow: rgba(31, 215, 96, 0.15);
+      --green-border: rgba(31, 215, 96, 0.3);
+      --white: #ffffff;
+      --gray: #8892a4;
+      --gray-light: #b0bbc9;
+      --surface: rgba(255,255,255,0.04);
+      --surface-hover: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background mesh */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(31,215,96,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 100%, rgba(31,215,96,0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Grid pattern overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 56px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      background: var(--green);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg {
+      width: 22px;
+      height: 22px;
+      fill: var(--navy);
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-text span {
+      color: var(--green);
+    }
+
+    .badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--green);
+      background: var(--green-glow);
+      border: 1px solid var(--green-border);
+      padding: 5px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Page title */
+    .page-title {
+      margin-bottom: 48px;
+    }
+
+    .page-title h1 {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+
+    .page-title h1 span {
+      color: var(--green);
+    }
+
+    .page-title p {
+      color: var(--gray);
+      font-size: 15px;
+      font-weight: 300;
+    }
+
+    /* Main layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .page-title h1 { font-size: 30px; }
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(255,255,255,0.13);
+    }
+
+    .card-title {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 1.5px;
+      color: var(--green);
+      text-transform: uppercase;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    /* Fields */
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-light);
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      font-family: 'DM Mono', monospace;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--white);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      transition: border-color 0.2s, background 0.2s;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input::placeholder {
+      color: rgba(255,255,255,0.2);
+    }
+
+    input:focus, select:focus {
+      border-color: var(--green-border);
+      background: rgba(31,215,96,0.05);
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238892a4' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+
+    select option {
+      background: var(--navy-light);
+      color: var(--white);
+    }
+
+    /* Button */
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: var(--green);
+      color: var(--navy);
+      border: none;
+      border-radius: 14px;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.2px;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 0 30px rgba(31,215,96,0.2);
+    }
+
+    .btn-primary:hover {
+      background: #25e866;
+      box-shadow: 0 0 40px rgba(31,215,96,0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Full width card */
+    .card-full {
+      grid-column: 1 / -1;
+    }
+
+    /* SDK Container */
+    #sdk-container {
+      margin-top: 16px;
+    }
+
+    /* Result area */
+    .result-card {
+      background: #070f1c;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .result-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: 0.5px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gray);
+    }
+
+    .dot.active {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    #result {
+      padding: 24px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: #64d98a;
+      white-space: pre-wrap;
+      word-break: break-all;
+      overflow: auto;
+      max-height: 500px;
+      line-height: 1.7;
+      min-height: 80px;
+    }
+
+    .result-waiting {
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* Preview image */
+    #preview {
+      max-width: 200px;
+      border-radius: 14px;
+      border: 2px solid var(--green-border);
+      display: none;
+      margin-top: 20px;
+      box-shadow: 0 0 30px rgba(31,215,96,0.1);
+    }
+
+    /* Status indicator */
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 12px 16px;
+      background: var(--green-glow);
+      border: 1px solid var(--green-border);
+      border-radius: 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--green);
+      display: none;
+    }
+
+    .status-row.visible {
+      display: flex;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 0 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <header>
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L3 7v10l9 5 9-5V7L12 2zm0 2.18L19 8v8l-7 3.82L5 16V8l7-3.82z"/>
+        </svg>
+      </div>
+      <div class="logo-text">VIDA <span>Identity Stack</span></div>
+    </div>
+    <div class="badge">SDK TESTER v1.0</div>
+  </header>
+
+  <div class="page-title">
+    <h1>Web SDK <span>Local Tester</span></h1>
+    <p>Configure and launch the VIDA Liveness SDK in your browser environment</p>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- Credentials Card -->
+    <div class="card">
+      <div class="card-title">Credentials</div>
+      <div style="font-size: 13px; color: var(--gray-light); margin-bottom: 14px; padding: 10px 12px; background: var(--green-glow); border: 1px solid var(--green-border); border-radius: 6px;">
+        Bearer Token &amp; Signing Key are fetched securely from Netlify Function <code style="background: rgba(0,0,0,0.25); padding: 1px 5px; border-radius: 3px;">/.netlify/functions/vida-token</code>. No need to paste them.
+      </div>
+
+      <div class="field">
+        <label>User ID (ID Fraud Shield)</label>
+        <input id="userId" placeholder="Enter unique user ID">
+      </div>
+    </div>
+
+    <!-- Configuration Card -->
+    <div class="card">
+      <div class="card-title">Configuration</div>
+
+      <div class="field">
+        <label>SDK Version</label>
+        <input id="sdkVersion" type="text" value="1.1.1" placeholder="e.g. 1.1.1">
+      </div>
+
+      <div class="field">
+        <label>Environment</label>
+        <select id="environment">
+          <option value="sandbox">Sandbox</option>
+          <option value="production">Production</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Locale</label>
+        <select id="locale">
+          <option value="EN">English</option>
+          <option value="ID">Bahasa Indonesia</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Camera Frame Shape</label>
+        <select id="cameraShape">
+          <option value="oval">Oval</option>
+          <option value="circle">Circle</option>
+          <option value="square">Square</option>
+          <option value="rectangle">Rectangle</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Launch Button -->
+    <div class="card card-full" style="padding: 24px;">
+      <button class="btn-primary" onclick="startSDK()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/>
+        </svg>
+        Launch Liveness SDK
+      </button>
+
+      <div class="status-row" id="statusRow">
+        <div class="dot active"></div>
+        <span id="statusText">SDK Initializing...</span>
+      </div>
+
+      <div id="sdk-container"></div>
+
+      <div style="text-align:center;">
+        <img id="preview">
+      </div>
+    </div>
+
+    <!-- Result Card -->
+    <div class="card-full result-card">
+      <div class="result-header">
+        <div class="result-header-left">
+          <div class="dot" id="resultDot"></div>
+          <span>SDK RESPONSE</span>
+        </div>
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray);" id="resultTimestamp"></span>
+      </div>
+      <div id="result" class="result-waiting">// Waiting for SDK response...</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  async function loadSDK(version, environment) {
+    return new Promise((resolve, reject) => {
+      const oldScript = document.getElementById("vida-sdk-script");
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement("script");
+      script.id = "vida-sdk-script";
+
+      if (environment === "sandbox") {
+        script.src = `https://web-sdk.vida.id/${version}/sandbox/vida-web-sdk.js`;
+      } else {
+        script.src = `https://web-sdk.vida.id/${version}/vida-web-sdk.js`;
+      }
+
+      script.onload = resolve;
+      script.onerror = reject;
+      document.body.appendChild(script);
+    });
+  }
+
+  function setStatus(text, visible = true) {
+    const row = document.getElementById("statusRow");
+    const label = document.getElementById("statusText");
+    row.classList.toggle("visible", visible);
+    label.textContent = text;
+  }
+
+  function setResult(content, isError = false) {
+    const el = document.getElementById("result");
+    const dot = document.getElementById("resultDot");
+    const ts = document.getElementById("resultTimestamp");
+    el.className = "";
+    el.style.color = isError ? "#ff6b6b" : "#64d98a";
+    el.textContent = content;
+    dot.classList.toggle("active", true);
+    dot.style.background = isError ? "#ff6b6b" : "var(--green)";
+    ts.textContent = new Date().toLocaleTimeString();
+  }
+
+  async function fetchCredentials(environment) {
+    setStatus("Fetching credentials from Netlify Function...");
+    const res = await fetch(`/.netlify/functions/vida-token?environment=${encodeURIComponent(environment)}`);
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Function returned ${res.status}: ${text}`);
+    }
+    const data = await res.json();
+    if (!data.token || !data.signingKey) {
+      throw new Error("Function response missing token or signingKey");
+    }
+    return data;
+  }
+
+  async function startSDK() {
+    const userId = document.getElementById("userId").value;
+    const sdkVersion = document.getElementById("sdkVersion").value;
+    const locale = document.getElementById("locale").value;
+    const environment = document.getElementById("environment").value;
+    const cameraShape = document.getElementById("cameraShape").value;
+
+    if (!userId) { alert("Please input User ID"); return; }
+
+    setStatus("Starting...");
+    setResult("// Fetching credentials...");
+
+    try {
+      // 1. Fetch token + signingKey from Netlify Function (credentials stay in env vars)
+      const { token, signingKey } = await fetchCredentials(environment);
+
+      // 2. Load the VIDA Web SDK script for the chosen environment
+      setStatus("Loading SDK script...");
+      setResult("// Loading SDK...");
+      await loadSDK(sdkVersion.trim(), environment);
+      setStatus("SDK loaded. Initializing...");
+
+      if (!window.VidaSDK) {
+        setResult("// Error: window.VidaSDK not found after script load", true);
+        setStatus("Failed to load SDK", true);
+        return;
+      }
+
+      setResult("// Initializing SDK...");
+
+      await window.VidaSDK.init({
+        token,
+        signingKey,
+        workflow: "liveness",
+        locale,
+        elementId: "sdk-container",
+        userInfo: { id: userId },
+        workflowConfigs: {
+          liveness: {
+            maxRetryAttempts: 4,
+            detectionTimeOut: 120000,
+            cameraFrameShape: cameraShape
+          }
+        },
+        onSelfieCapture: (image) => {
+          const preview = document.getElementById("preview");
+          preview.src = image;
+          preview.style.display = "block";
+          setStatus("Selfie captured. Processing...");
+        },
+        onComplete: (data) => {
+          const formattedData = {
+            ...data,
+            base64Image: data.base64Image ? "[base64 image data]" : undefined
+          };
+          setResult(JSON.stringify(formattedData, null, 2));
+          setStatus("SDK completed successfully.");
+        },
+        onError: (error) => {
+          const formattedError = {
+            ...error,
+            base64Image: error.base64Image ? "[base64 image data]" : undefined
+          };
+          setResult(JSON.stringify(formattedError, null, 2), true);
+          setStatus("SDK encountered an error.");
+        }
+      });
+
+      setStatus("SDK running — follow the on-screen instructions.");
+
+    } catch (err) {
+      console.error(err);
+      setResult("// Error: " + (err.message || JSON.stringify(err)), true);
+      setStatus("SDK initialization failed.");
+    }
+  }
+</script>
+
+</body>
+</html>
