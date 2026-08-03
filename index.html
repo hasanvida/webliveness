@@ -470,6 +470,11 @@
             <option value="rectangle">Rectangle</option>
           </select>
         </div>
+
+        <div class="field">
+          <label>User ID</label>
+          <input id="userId" type="text" placeholder="optional — required if ID Fraud Shield is enabled">
+        </div>
       </div>
     </div>
 
@@ -570,6 +575,7 @@
     const locale = document.getElementById("locale").value;
     const environment = document.getElementById("environment").value;
     const cameraShape = document.getElementById("cameraShape").value;
+    const userId = document.getElementById("userId").value.trim();
 
     setStatus("Starting...");
     setResult("// Fetching credentials...");
@@ -592,7 +598,7 @@
 
       setResult("// Initializing SDK...");
 
-      await window.VidaSDK.init({
+      const initConfig = {
         token,
         signingKey,
         workflow: "liveness",
@@ -629,7 +635,15 @@
           setResult(JSON.stringify(formattedError, null, 2), true);
           setStatus("SDK encountered an error.");
         }
-      });
+      };
+
+      // userInfo.id is only added if the User ID field is filled in — per VIDA Web SDK
+      // docs, this is required when ID Fraud Shield is enabled, optional otherwise.
+      if (userId) {
+        initConfig.userInfo = { id: userId };
+      }
+
+      await window.VidaSDK.init(initConfig);
 
       setStatus("SDK running — follow the on-screen instructions.");
 
